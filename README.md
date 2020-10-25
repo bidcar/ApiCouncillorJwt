@@ -1,3 +1,3 @@
-# Api Rest JWT y base de datos Postgress
+# Api Rest JWT y base de datos PostgreSQL
 
 Reference : https://jwt.io/
