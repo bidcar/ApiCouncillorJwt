@@ -63,10 +63,13 @@ public class CatalogController {
     public List<Persontype> allServiceType() {
         List<Persontype> result = personTypeServiceAPI.getAll();
         return result;
-
     }
 
-
+/*    @PostMapping(value = "/deleteServiceType")
+    public ResponseEntity<String> deleteServiceType(@RequestBody Persontype persontype) {
+        personTypeServiceAPI.delete(persontype.getPersonTypeId());
+        return new ResponseEntity<String>("Registro eliminado", HttpStatus.OK);
+    }*/
 
     @PostMapping(value = "/saveServiceType")
     public ResponseEntity<Persontype> saveServiceType(@RequestBody Persontype persontype) {
@@ -105,7 +108,7 @@ public class CatalogController {
     }
 
     @PostMapping(value = "/NewQuotation")
-    public ResponseEntity<String> NewQuotation(@RequestBody RequestQuotation requestQuotation) {
+    public ResponseEntity<ResponseQuotation> NewQuotation(@RequestBody RequestQuotation requestQuotation) {
 
         //Save vehicle
         Vehicle objVehicle = vehicleServiceAPI.save(requestQuotation.getVehicle());
@@ -129,7 +132,10 @@ public class CatalogController {
 
         Quotation objQuotation = quotationServiceAPI.save(quotation);
         String obj = objQuotation.getQuotationid().toString();
-        return new ResponseEntity<String>(obj, HttpStatus.OK);
+        ResponseQuotation response = new ResponseQuotation();
+        response.setId(obj);
+        response.setMessage("Cotización exitosa");
+        return new ResponseEntity<ResponseQuotation>(response, HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
