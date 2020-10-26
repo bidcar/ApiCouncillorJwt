@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class CatalogController {
@@ -45,6 +47,7 @@ public class CatalogController {
     @Autowired
     private QuotationServiceAPI quotationServiceAPI;
 
+
     @GetMapping("/")
     public String welcome() {
         return "Bienvenido a la api de Concesionarios!!";
@@ -60,7 +63,10 @@ public class CatalogController {
     public List<Persontype> allServiceType() {
         List<Persontype> result = personTypeServiceAPI.getAll();
         return result;
+
     }
+
+
 
     @PostMapping(value = "/saveServiceType")
     public ResponseEntity<Persontype> saveServiceType(@RequestBody Persontype persontype) {
@@ -91,11 +97,39 @@ public class CatalogController {
     }
 
     @PostMapping(value = "/saveQuotation")
-    public ResponseEntity<Quotation> saveDemographicData(@RequestBody Quotation quotation) {
+    public ResponseEntity<Quotation> saveQuotation(@RequestBody Quotation quotation) {
         quotation.setDatecreated(convertToDateViaSqlDate(LocalDate.now()));
 
         Quotation obj = quotationServiceAPI.save(quotation);
         return new ResponseEntity<Quotation>(obj, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/NewQuotation")
+    public ResponseEntity<String> NewQuotation(@RequestBody RequestQuotation requestQuotation) {
+
+        //Save vehicle
+        Vehicle objVehicle = vehicleServiceAPI.save(requestQuotation.getVehicle());
+
+        //Save client
+        Person objClient = personServiceAPI.save(requestQuotation.getClient());
+
+        //Save demographic data
+        Demographicdata demographicdata = requestQuotation.getDemographicdata();
+        demographicdata.setUserid(objClient.getUserid());
+        Demographicdata objDemographic = demographicdataServiceAPI.save(demographicdata);
+
+        //Save Agent
+        Person objAgent = personServiceAPI.save(requestQuotation.getAgent());
+
+        Quotation quotation = requestQuotation.getQuotation();
+        quotation.setDatecreated(convertToDateViaSqlDate(LocalDate.now()));
+        quotation.setClientid(objClient.getUserid());
+        quotation.setAgentsalesid(objAgent.getUserid());
+        quotation.setVehicleid(objVehicle.getVehicleid());
+
+        Quotation objQuotation = quotationServiceAPI.save(quotation);
+        String obj = objQuotation.getQuotationid().toString();
+        return new ResponseEntity<String>(obj, HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
@@ -109,4 +143,34 @@ public class CatalogController {
         }
         return jwtUtil.generateToken(authRequest.getUserName());
     }
+
+    @PostMapping(value = "/Between")
+    public List<Quotation> Between(@RequestBody RequestReports requestReports) throws ParseException {
+        List<Quotation> result = quotationServiceAPI.getAll();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+
+        Date start = null;
+        Date end = null;
+        start = sdf.parse(requestReports.getStartdate());
+        end = sdf.parse(requestReports.getEnddate());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(start);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        start = calendar.getTime();
+
+        calendar.setTime(end);
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        end = calendar.getTime();
+
+        Date finalEnd = end;
+        Date finalStart = start;
+        List<Quotation> filter =  result.stream()
+                .filter(dates -> dates.getDatecreated().after(finalStart)
+                        && dates.getDatecreated().before(finalEnd)).collect(Collectors.toList());
+        return filter;
+
+    }
+
 }

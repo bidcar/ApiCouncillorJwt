@@ -61,11 +61,11 @@ public class Quotation {
     public void setQuotationid(Integer quotationid) {
         this.quotationid = quotationid;
     }
-    public Integer getCouncillorId() {return councillorid;}
+    public Integer getCouncillorid() {return councillorid;}
     public void setCouncillorid(Integer councillorid) {this.councillorid= councillorid;}
     public Integer getClientid() {return clientid; }
-    public void setClientid(Integer clienid) {
-        this.clientid = clienid;
+    public void setClientid(Integer clientid) {
+        this.clientid = clientid;
     }
     public Integer getAgentsalesid() {
         return agentsalesid;

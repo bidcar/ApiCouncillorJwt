@@ -33,7 +33,7 @@ public class Vehicle {
     public void setVehicleid(Integer vehicleid) {
         this.vehicleid = vehicleid;
     }
-    public Integer getCouncillorId() {return councillorid;}
+    public Integer getCouncillorid() {return councillorid;}
     public void setCouncillorid(Integer councillorid) {this.councillorid= councillorid;}
     public Integer getVehicletypeid() {
         return vehicletypeid;
