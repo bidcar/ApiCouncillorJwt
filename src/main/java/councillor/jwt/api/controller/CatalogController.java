@@ -1,13 +1,8 @@
 package councillor.jwt.api.controller;
 
-import councillor.jwt.api.entity.AuthRequest;
-import councillor.jwt.api.entity.Person;
-import councillor.jwt.api.entity.Persontype;
-import councillor.jwt.api.entity.Persona;
-import councillor.jwt.api.service.api.PersonServiceAPI;
-import councillor.jwt.api.service.api.PersonTypeServiceAPI;
+import councillor.jwt.api.entity.*;
+import councillor.jwt.api.service.api.*;
 import councillor.jwt.api.util.JwtUtil;
-import councillor.jwt.api.service.api.PersonaServiceAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +36,14 @@ public class CatalogController {
     @Autowired
     private PersonServiceAPI personServiceAPI;
 
+    @Autowired
+    private DemographicdataServiceAPI demographicdataServiceAPI;
 
+    @Autowired
+    private VehicleServiceAPI vehicleServiceAPI;
+
+    @Autowired
+    private QuotationServiceAPI quotationServiceAPI;
 
     @GetMapping("/")
     public String welcome() {
@@ -58,8 +62,6 @@ public class CatalogController {
         return result;
     }
 
-
-
     @PostMapping(value = "/saveServiceType")
     public ResponseEntity<Persontype> saveServiceType(@RequestBody Persontype persontype) {
         Persontype obj = personTypeServiceAPI.save(persontype);
@@ -70,6 +72,30 @@ public class CatalogController {
     public ResponseEntity<Person> savePerson(@RequestBody Person person) {
         Person obj = personServiceAPI.save(person);
         return new ResponseEntity<Person>(obj, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/saveDemographicData")
+    public ResponseEntity<Demographicdata> saveDemographicData(@RequestBody Demographicdata demographicdata) {
+        Demographicdata obj = demographicdataServiceAPI.save(demographicdata);
+        return new ResponseEntity<Demographicdata>(obj, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/saveVehicle")
+    public ResponseEntity<Vehicle> saveVehicle(@RequestBody Vehicle vehicle) {
+        Vehicle obj = vehicleServiceAPI.save(vehicle);
+        return new ResponseEntity<Vehicle>(obj, HttpStatus.OK);
+    }
+
+    public Date convertToDateViaSqlDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
+    @PostMapping(value = "/saveQuotation")
+    public ResponseEntity<Quotation> saveDemographicData(@RequestBody Quotation quotation) {
+        quotation.setDatecreated(convertToDateViaSqlDate(LocalDate.now()));
+
+        Quotation obj = quotationServiceAPI.save(quotation);
+        return new ResponseEntity<Quotation>(obj, HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
