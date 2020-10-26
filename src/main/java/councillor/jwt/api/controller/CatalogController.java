@@ -1,8 +1,10 @@
 package councillor.jwt.api.controller;
 
 import councillor.jwt.api.entity.AuthRequest;
+import councillor.jwt.api.entity.Person;
 import councillor.jwt.api.entity.Persontype;
 import councillor.jwt.api.entity.Persona;
+import councillor.jwt.api.service.api.PersonServiceAPI;
 import councillor.jwt.api.service.api.PersonTypeServiceAPI;
 import councillor.jwt.api.util.JwtUtil;
 import councillor.jwt.api.service.api.PersonaServiceAPI;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -33,6 +35,10 @@ public class CatalogController {
 
     @Autowired
     private PersonTypeServiceAPI personTypeServiceAPI;
+
+    @Autowired
+    private PersonServiceAPI personServiceAPI;
+
 
 
     @GetMapping("/")
@@ -52,10 +58,18 @@ public class CatalogController {
         return result;
     }
 
+
+
     @PostMapping(value = "/saveServiceType")
     public ResponseEntity<Persontype> saveServiceType(@RequestBody Persontype persontype) {
         Persontype obj = personTypeServiceAPI.save(persontype);
         return new ResponseEntity<Persontype>(obj, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/savePerson")
+    public ResponseEntity<Person> savePerson(@RequestBody Person person) {
+        Person obj = personServiceAPI.save(person);
+        return new ResponseEntity<Person>(obj, HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
