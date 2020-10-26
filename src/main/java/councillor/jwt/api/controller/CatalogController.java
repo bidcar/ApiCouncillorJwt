@@ -65,11 +65,11 @@ public class CatalogController {
         return result;
     }
 
-/*    @PostMapping(value = "/deleteServiceType")
+    @PostMapping(value = "/deleteServiceType")
     public ResponseEntity<String> deleteServiceType(@RequestBody Persontype persontype) {
         personTypeServiceAPI.delete(persontype.getPersonTypeId());
         return new ResponseEntity<String>("Registro eliminado", HttpStatus.OK);
-    }*/
+    }
 
     @PostMapping(value = "/saveServiceType")
     public ResponseEntity<Persontype> saveServiceType(@RequestBody Persontype persontype) {
